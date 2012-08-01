@@ -3,7 +3,9 @@ I have a fully configured vim for development, right now I'm using Laravel and G
 
 ## To install
 Backup your original .vim/ directory
-`sudo cp ~/.vim/ ~/.vim_old/`
+`sudo mv ~/.vim/ ~/.vim_old/`
+Re-create your vim directory
+`sudo mkdir ~/.vim`
 And you know the rest.
 - Empty the `~/.vim/` directory
 - Grab this files and put inside of the .vim directory
