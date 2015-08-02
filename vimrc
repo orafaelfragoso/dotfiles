@@ -6,6 +6,11 @@ set nocompatible   " Disable vi-compatibility
 set t_Co=256
 syntax on
 
+" Fix VIM bug for temporary files
+set dir=~/.vim/swap//
+set backupdir=~/.vim/backup//
+set undodir=~/.vim/undo//
+
 colorscheme xoria256
 set guifont=menlo\ for\ powerline:h16
 set guioptions-=T " Removes top toolbar
