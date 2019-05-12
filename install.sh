@@ -2,6 +2,7 @@
 
 SYSTEM=$(uname -s)
 GIT_EMAIL=""
+GIT_USERNAME=""
 GIT_NAME=""
 
 function config() {
@@ -9,10 +10,11 @@ function config() {
 	printf "\033[1;32m$1 detected. Proceeding with install.\033[0m\n"
 
 	read -p "Enter Your Github E-mail: " GIT_EMAIL
+	read -p "Enter Your Github Username: " GIT_USERNAME
 	read -p "Enter Your Name (Ex: Rafael Fragoso): " GIT_NAME
 
 	chmod +x ./bin/macos.sh
-	chmod +x ./bin/ubuntu.sh
+	#chmod +x ./bin/ubuntu.sh
 }
 
 case "$SYSTEM" in
