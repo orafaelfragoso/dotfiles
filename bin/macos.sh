@@ -12,7 +12,7 @@ question() {
 }
 
 # Necessary tools to compile and install other tools
-command_line_tools() {
+command_line_tools_install() {
   printf "\n\033[0;32m[1|$NUMBER_OF_STEPS] Installing command line tools\033[0m"
   if hash $(xcode-select -p) 0>/dev/null; then
     printf "\nCommand-line tools is already installed. Skipping."
@@ -22,7 +22,7 @@ command_line_tools() {
   xcode-select --install
 }
 
-homebrew() {
+homebrew_install() {
   printf "\n\033[0;32m[2|$NUMBER_OF_STEPS] Installing Homebrew\033[0m"
   if hash brew 2>/dev/null; then
     printf "\nHomebrew is already installed. Skipping."
@@ -32,7 +32,7 @@ homebrew() {
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 }
 
-git() {
+git_install() {
   printf "\n\033[0;32m[3|$NUMBER_OF_STEPS] Installing Git\033[0m"
   if hash git 2>/dev/null; then
     printf "\nGit is already installed. Skipping."
@@ -42,7 +42,7 @@ git() {
   brew install git
 }
 
-sshkeys() {
+sshkeys_install() {
   printf "\n\033[0;32m[4|$NUMBER_OF_STEPS] Generating SSH keys for Github and Bitbucket\033[0m"
   local SSH_PATH=~/.ssh
   local GITHUB_KEY=$SSH_PATH/id_rsa
@@ -86,20 +86,76 @@ Host bitbucket.org
   fi
 }
 
-# Programming Languages
-# Databases
-# Development Software
-# User Preferences
+zsh_install() {
 
+}
+
+# Programming Languages
+node_install() {
+
+}
+
+ruby_install() {
+
+}
+
+# Databases
+mysql_install() {
+
+}
+
+postgresql_install() {
+
+}
+
+# Development Software
+docker_install() {
+
+}
+
+vim_install() {
+
+}
+
+vscode_install() {
+
+}
+
+tmux_install() {
+
+}
+
+iterm2_install() {
+
+}
+
+# User Preferences
+vimfiles_install() {
+
+}
+
+tmuxfiles_install() {
+
+}
+
+vscodefiles_install() {
+
+}
+
+iterm2files_install() {
+
+}
+
+# Start installation
 read -p "Do you wish to install everything? Say $(echo -e "\033[1;31mno\033[0m") if you want a custom install: " -n 1 -r
 echo
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   printf "\nInstalling everything..."
-  command_line_tools
-  homebrew
-  git
-  sshkeys
+  command_line_tools_install
+  homebrew_install
+  git_install
+  sshkeys_install
 else
   NUMBER_OF_STEPS=0
   question "Install Command-line Tools?" "INSTALL_COMMAND_LINE_TOOLS"
@@ -108,18 +164,18 @@ else
   question "Generate SSH keys" "GENERATE_SSH_KEYS"
 
   if [[ ! -z "$INSTALL_COMMAND_LINE_TOOLS" ]] || [[ "$INSTALL_COMMAND_LINE_TOOLS" =~ (Y|y|1) ]]; then
-    command_line_tools
+    command_line_tools_install
   fi
 
   if [[ ! -z "$INSTALL_HOMEBREW" ]] || [[ "$INSTALL_HOMEBREW" =~ (Y|y|1) ]]; then
-    homebrew
+    homebrew_install
   fi
 
   if [[ ! -z "$INSTALL_GIT" ]] || [[ "$INSTALL_GIT" =~ (Y|y|1) ]]; then
-    git
+    git_install
   fi
 
   if [[ ! -z "$GENERATE_SSH_KEYS" ]] || [[ "$GENERATE_SSH_KEYS" =~ (Y|y|1) ]]; then
-    sshkeys
+    sshkeys_install
   fi
 fi
