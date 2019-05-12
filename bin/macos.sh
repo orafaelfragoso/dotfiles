@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NUMBER_OF_STEPS=4
+NUMBER_OF_STEPS=8
 
 # Questions
 question() {
@@ -87,63 +87,106 @@ Host bitbucket.org
 }
 
 zsh_install() {
+  printf "\n\033[0;32m[5|$NUMBER_OF_STEPS] Installing ZSH\033[0m"
+  if [ -x "$(command -v zsh)" ]; then
+    printf "\nZSH is already installed. Skipping."
+    return
+  fi
 
+  brew install zsh zsh-completions
+  chsh -s /bin/zsh
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 }
 
 # Programming Languages
-node_install() {
+asdf_install() {
+  printf "\n\033[0;32m[6|$NUMBER_OF_STEPS] Installing asdf\033[0m"
+  if [ -x "$(command -v asdf)" ]; then
+    printf "\nasdf is already installed. Skipping."
+    return
+  fi
 
+  brew install \
+    coreutils automake autoconf openssl \
+    libyaml readline libxslt libtool unixodbc \
+    unzip curl gpg
+
+  brew install asdf
+
+  echo -e '\n. /usr/local/opt/asdf/asdf.sh' >> ~/.zshrc
+  source /usr/local/opt/asdf/asdf.sh
+}
+
+nodejs_install() {
+  printf "\n\033[0;32m[7|$NUMBER_OF_STEPS] Installing NodeJS\033[0m"
+  if [ -x "$(command -v node)" ]; then
+    printf "\nNodeJS is already installed. Skipping."
+    return
+  fi
+
+  asdf plugin-add nodejs
+  bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
+  asdf install nodejs 12.2.0
+  asdf global nodejs 12.2.0
 }
 
 ruby_install() {
+  printf "\n\033[0;32m[8|$NUMBER_OF_STEPS] Installing Ruby\033[0m"
+  if [ -x "$(command -v ruby)" ]; then
+    printf "\nRuby is already installed. Skipping."
+    return
+  fi
 
+  asdf plugin-add ruby
+  asdf install ruby 2.6.3
+  asdf global ruby 2.6.3
 }
 
 # Databases
 mysql_install() {
-
+  echo
 }
 
 postgresql_install() {
-
+  echo
 }
 
 # Development Software
 docker_install() {
-
+  echo
 }
 
 vim_install() {
-
+  echo
 }
 
 vscode_install() {
-
+  echo
 }
 
 tmux_install() {
-
+  echo
 }
 
 iterm2_install() {
-
+  echo
 }
 
 # User Preferences
 vimfiles_install() {
-
+  echo
 }
 
 tmuxfiles_install() {
-
+  echo
 }
 
 vscodefiles_install() {
-
+  echo
 }
 
 iterm2files_install() {
-
+  echo
 }
 
 # Start installation
@@ -156,12 +199,18 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   homebrew_install
   git_install
   sshkeys_install
+  zsh_install
+  asdf_install
 else
   NUMBER_OF_STEPS=0
   question "Install Command-line Tools?" "INSTALL_COMMAND_LINE_TOOLS"
   question "Install Homebrew?" "INSTALL_HOMEBREW"
   question "Install Git?" "INSTALL_GIT"
   question "Generate SSH keys" "GENERATE_SSH_KEYS"
+  question "Install ZSH?" "INSTALL_ZSH"
+  question "Install asdf?" "INSTALL_ASDF"
+  question "Install NodeJS?" "INSTALL_NODEJS"
+  question "Install Ruby?" "INSTALL_RUBY"
 
   if [[ ! -z "$INSTALL_COMMAND_LINE_TOOLS" ]] || [[ "$INSTALL_COMMAND_LINE_TOOLS" =~ (Y|y|1) ]]; then
     command_line_tools_install
@@ -177,5 +226,21 @@ else
 
   if [[ ! -z "$GENERATE_SSH_KEYS" ]] || [[ "$GENERATE_SSH_KEYS" =~ (Y|y|1) ]]; then
     sshkeys_install
+  fi
+
+  if [[ ! -z "$INSTALL_ZSH" ]] || [[ "$INSTALL_ZSH" =~ (Y|y|1) ]]; then
+    zsh_install
+  fi
+
+  if [[ ! -z "$INSTALL_ZSH" ]] || [[ "$INSTALL_ZSH" =~ (Y|y|1) ]]; then
+    asdf_install
+  fi
+
+  if [[ ! -z "$INSTALL_NODEJS" ]] || [[ "$INSTALL_NODEJS" =~ (Y|y|1) ]]; then
+    nodejs_install
+  fi
+
+  if [[ ! -z "$INSTALL_RUBY" ]] || [[ "$INSTALL_RUBY" =~ (Y|y|1) ]]; then
+    ruby_install
   fi
 fi
