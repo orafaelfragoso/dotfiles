@@ -20,6 +20,7 @@ command_line_tools_install() {
   fi
 
   xcode-select --install
+  . ~/.bashrc
 }
 
 homebrew_install() {
@@ -30,6 +31,7 @@ homebrew_install() {
   fi
 
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  . ~/.bashrc
 }
 
 git_install() {
@@ -40,6 +42,8 @@ git_install() {
   fi
 
   brew install git
+  git config --global user.name "$GIT_NAME"
+  git config --global user.email "$GIT_EMAIL"
 }
 
 sshkeys_install() {
@@ -114,7 +118,8 @@ asdf_install() {
   brew install asdf
 
   echo -e '\n. /usr/local/opt/asdf/asdf.sh' >> ~/.zshrc
-  source /usr/local/opt/asdf/asdf.sh
+  echo -e '\n. /usr/local/opt/asdf/asdf.sh' >> ~/.bashrc
+  . ~/.bashrc
 }
 
 nodejs_install() {
@@ -144,32 +149,71 @@ ruby_install() {
 
 # Databases
 mysql_install() {
-  echo
+  printf "\n\033[0;32m[9|$NUMBER_OF_STEPS] Installing MySQL\033[0m"
+  if hash mysql 2>/dev/null; then
+    printf "\nMySQL is already installed. Skipping."
+    return
+  fi
+
+  brew install mysql
 }
 
 postgresql_install() {
-  echo
+  printf "\n\033[0;32m[10|$NUMBER_OF_STEPS] Installing PostgreSQL\033[0m"
+  if hash psql 2>/dev/null; then
+    printf "\nPostgreSQL is already installed. Skipping."
+    return
+  fi
+
+  brew install postgres
 }
 
 # Development Software
 docker_install() {
-  echo
+  printf "\n\033[0;32m[11|$NUMBER_OF_STEPS] Installing Docker\033[0m"
+  if [ -x "$(command -v docker)" ]; then
+    printf "\nDocker is already installed. Skipping."
+    return
+  fi
+
+  brew cask install docker
 }
 
 vim_install() {
-  echo
+  printf "\n\033[0;32m[12|$NUMBER_OF_STEPS] Installing Vim and MacVim\033[0m"
+
+  brew install vim
+  brew install macvim
 }
 
 vscode_install() {
-  echo
+  printf "\n\033[0;32m[13|$NUMBER_OF_STEPS] Installing Visual Studio Code\033[0m"
+  if [ -x "$(command -v code)" ]; then
+    printf "\nVisual Studio Code is already installed. Skipping."
+    return
+  fi
+
+  brew cask install visual-studio-code
 }
 
 tmux_install() {
-  echo
+  printf "\n\033[0;32m[14|$NUMBER_OF_STEPS] Installing Tmux\033[0m"
+  if [ -x "$(command -V tmux)" ]; then
+    printf "\nTmux is already installed. Skipping."
+    return
+  fi
+
+  brew install tmux
 }
 
 iterm2_install() {
-  echo
+  printf "\n\033[0;32m[15|$NUMBER_OF_STEPS] Installing Tmux\033[0m"
+  if brew info brew-cask &>/dev/null; then
+    printf "\niTerm2 is already installed. Skipping."
+    return
+  fi
+
+  brew cask install iterm2
 }
 
 # User Preferences
