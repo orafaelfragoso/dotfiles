@@ -8,7 +8,9 @@ GIT_NAME=""
 if [ ! -d "$HOME/.dotfiles" ]; then
 	printf "\nInstalling dotfiles for the first time 🚀\n"
 	curl -L -o dotfiles.zip https://github.com/orafaelfragoso/dotfiles/archive/master.zip
-	unzip -j -o -q dotfiles.zip -d $HOME/.dotfiles
+	unzip dotfiles.zip
+	cp -r ./dotfiles-master $HOME/.dotfiles
+	rm -rf ./dotfiles-master ./dotfiles.zip
 	cd "$HOME/.dotfiles"
 else
 	echo "\n🚫 dotfiles are already installed."
