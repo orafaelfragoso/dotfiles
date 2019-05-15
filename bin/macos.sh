@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NUMBER_OF_STEPS=8
+NUMBER_OF_STEPS=19
 
 # Questions
 question() {
@@ -198,7 +198,7 @@ vscode_install() {
 
 tmux_install() {
   printf "\n\033[0;32m[14|$NUMBER_OF_STEPS] Installing Tmux\033[0m"
-  if [ -x "$(command -V tmux)" ]; then
+  if tmux -V &>/dev/null; then
     printf "\nTmux is already installed. Skipping."
     return
   fi
@@ -245,6 +245,15 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   sshkeys_install
   zsh_install
   asdf_install
+  nodejs_install
+  ruby_install
+  mysql_install
+  postgresql_install
+  docker_install
+  vim_install
+  vscode_install
+  tmux_install
+  iterm2_install
 else
   NUMBER_OF_STEPS=0
   question "Install Command-line Tools?" "INSTALL_COMMAND_LINE_TOOLS"
@@ -255,6 +264,13 @@ else
   question "Install asdf?" "INSTALL_ASDF"
   question "Install NodeJS?" "INSTALL_NODEJS"
   question "Install Ruby?" "INSTALL_RUBY"
+  question "Install MySQL?" "INSTALL_MYSQL"
+  question "Install PostgreSQL?" "INSTALL_POSTGRES"
+  question "Install Docker?" "INSTALL_DOCKER"
+  question "Install Vim?" "INSTALL_VIM"
+  question "Install VSCode?" "INSTALL_VSCODE"
+  question "Install Tmux?" "INSTALL_TMUX"
+  question "Install iTerm2?" "INSTALL_ITERM"
 
   if [[ ! -z "$INSTALL_COMMAND_LINE_TOOLS" ]] || [[ "$INSTALL_COMMAND_LINE_TOOLS" =~ (Y|y|1) ]]; then
     command_line_tools_install
@@ -276,7 +292,7 @@ else
     zsh_install
   fi
 
-  if [[ ! -z "$INSTALL_ZSH" ]] || [[ "$INSTALL_ZSH" =~ (Y|y|1) ]]; then
+  if [[ ! -z "$INSTALL_ASDF" ]] || [[ "$INSTALL_ASDF" =~ (Y|y|1) ]]; then
     asdf_install
   fi
 
@@ -286,5 +302,33 @@ else
 
   if [[ ! -z "$INSTALL_RUBY" ]] || [[ "$INSTALL_RUBY" =~ (Y|y|1) ]]; then
     ruby_install
+  fi
+
+  if [[ ! -z "$INSTALL_MYSQL" ]] || [[ "$INSTALL_MYSQL" =~ (Y|y|1) ]]; then
+    mysql_install
+  fi
+
+  if [[ ! -z "$INSTALL_POSTGRES" ]] || [[ "$INSTALL_POSTGRES" =~ (Y|y|1) ]]; then
+    postgresql_install
+  fi
+
+  if [[ ! -z "$INSTALL_DOCKER" ]] || [[ "$INSTALL_DOCKER" =~ (Y|y|1) ]]; then
+    docker_install
+  fi
+
+  if [[ ! -z "$INSTALL_VIM" ]] || [[ "$INSTALL_VIM" =~ (Y|y|1) ]]; then
+    vim_install
+  fi
+
+  if [[ ! -z "$INSTALL_VSCODE" ]] || [[ "$INSTALL_VSCODE" =~ (Y|y|1) ]]; then
+    vscode_install
+  fi
+
+  if [[ ! -z "$INSTALL_TMUX" ]] || [[ "$INSTALL_TMUX" =~ (Y|y|1) ]]; then
+    tmux_install
+  fi
+
+  if [[ ! -z "$INSTALL_ITERM" ]] || [[ "$INSTALL_ITERM" =~ (Y|y|1) ]]; then
+    iterm2_install
   fi
 fi
