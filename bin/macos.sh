@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 NUMBER_OF_STEPS=19
+STEP=1
 
 # Questions
 question() {
@@ -11,9 +12,24 @@ question() {
   fi
 }
 
+console() {
+  case $2 in
+    0*)
+      printf "\n\033[0;32m[$STEP|$NUMBER_OF_STEPS] $1\033[0m\n"
+      ;;
+    1*)
+      printf "\n$1\n"
+      ;;
+    *)
+      printf "\n\033[0;32m[$STEP|$NUMBER_OF_STEPS] $1\033[0m\n"
+  esac
+}
+
 # Necessary tools to compile and install other tools
+# HOMEBREW ALREADY INSTALLS CLI TOOLS
 command_line_tools_install() {
-  printf "\n\033[0;32m[1|$NUMBER_OF_STEPS] Installing command line tools\033[0m\n"
+  console "Installing command line tools"
+
   if hash $(xcode-select -p) 0>/dev/null; then
     printf "\nCommand-line tools is already installed. Skipping."
     return
@@ -24,9 +40,10 @@ command_line_tools_install() {
 }
 
 homebrew_install() {
-  printf "\n\033[0;32m[2|$NUMBER_OF_STEPS] Installing Homebrew\033[0m\n"
+  console "Installing Homebrew"
+
   if hash brew 2>/dev/null; then
-    printf "\nHomebrew is already installed. Skipping."
+    console "Homebrew is already installed. Skipping." 1
     return
   fi
 
@@ -35,9 +52,10 @@ homebrew_install() {
 }
 
 git_install() {
-  printf "\n\033[0;32m[3|$NUMBER_OF_STEPS] Installing Git\033[0m\n"
+  console "Installing Git"
+
   if hash git 2>/dev/null; then
-    printf "\nGit is already installed. Skipping."
+    console "Git is already installed. Skipping." 1
     return
   fi
 
@@ -47,32 +65,33 @@ git_install() {
 }
 
 sshkeys_install() {
-  printf "\n\033[0;32m[4|$NUMBER_OF_STEPS] Generating SSH keys for Github and Bitbucket\033[0m\n"
-  local SSH_PATH=~/.ssh
+  console "Generating SSH keys for Github and Bitbucket"
+
+  local SSH_PATH=$HOME/.ssh
   local GITHUB_KEY=$SSH_PATH/id_rsa
   local BITBUCKET_KEY=$SSH_PATH/$GIT_USERNAME
   local CONFIG=$SSH_PATH/config
 
   if [ -f "$GITHUB_KEY" ]; then
-    printf "\nGithub key already exists. Skipping."
+    console "Github key already exists. Skipping." 1
   else
-    printf "\nGenerating Github keys."
+    console "Generating Github keys." 1
     
-    ssh-keygen -t rsa -b 4096 -C "$GIT_EMAIL" -N ""
+    ssh-keygen -t rsa -f "$SSH_PATH/id_rsa" -b 4096 -C "$GIT_EMAIL" -q -N ""
   fi
 
   if [  -f "$BITBUCKET_KEY" ]; then
-    printf "\nBitbucket key already exists. Skipping."
+    console "Bitbucket key already exists. Skipping." 1
   else
-    printf "\nGenerating Bitbucket keys."
+    console "Generating Bitbucket keys." 1
 
-    ssh-keygen -f ~/.ssh/$GIT_USERNAME -N ""
+    ssh-keygen -f ~/.ssh/$GIT_USERNAME -q -N ""
   fi
 
   if [ -f "$CONFIG" ]; then
-    printf "\nconfig file already exists. Skipping."
+    console "config file already exists. Skipping." 1
   else
-    printf "\nConfiguring SSH keys"
+    console "Configuring SSH keys" 1
 
     echo "Host github.com
   AddKeysToAgent yes
@@ -91,22 +110,30 @@ Host bitbucket.org
 }
 
 zsh_install() {
-  printf "\n\033[0;32m[5|$NUMBER_OF_STEPS] Installing ZSH\033[0m\n"
+  console "Installing ZSH"
+
   if [ -x "$(command -v zsh)" ]; then
-    printf "\nZSH is already installed. Skipping."
-    return
+    console "ZSH is already installed. Skipping." 1
+  else 
+    brew install zsh zsh-completions
   fi
 
-  brew install zsh zsh-completions
+  # Change to ZSH
   chsh -s /bin/zsh
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+  if [ -d "$HOME/.oh-my-zsh" ]; then
+    console "oh-my-zsh is already installed. Skipping." 1
+  else
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+  fi
 }
 
 # Programming Languages
 asdf_install() {
-  printf "\n\033[0;32m[6|$NUMBER_OF_STEPS] Installing asdf\033[0m\n"
+  console "Installing asdf"
+
   if [ -x "$(command -v asdf)" ]; then
-    printf "\nasdf is already installed. Skipping."
+    console "asdf is already installed. Skipping." 1
     return
   fi
 
@@ -123,9 +150,10 @@ asdf_install() {
 }
 
 nodejs_install() {
-  printf "\n\033[0;32m[7|$NUMBER_OF_STEPS] Installing NodeJS\033[0m\n"
+  console "Installing NodeJS"
+
   if [ -x "$(command -v node)" ]; then
-    printf "\nNodeJS is already installed. Skipping."
+    console "NodeJS is already installed. Skipping." 1
     return
   fi
 
@@ -136,11 +164,13 @@ nodejs_install() {
 }
 
 ruby_install() {
-  printf "\n\033[0;32m[8|$NUMBER_OF_STEPS] Installing Ruby\033[0m\n"
-  if [ -x "$(command -v ruby)" ]; then
-    printf "\nRuby is already installed. Skipping."
-    return
-  fi
+  console "Installing Ruby"
+
+  # Ruby is already installed on macos, override it.
+  # if [ -x "$(command -v ruby)" ]; then
+  #   printf "\nRuby is already installed. Skipping."
+  #   return
+  # fi
 
   asdf plugin-add ruby
   asdf install ruby 2.6.3
@@ -149,9 +179,10 @@ ruby_install() {
 
 # Databases
 mysql_install() {
-  printf "\n\033[0;32m[9|$NUMBER_OF_STEPS] Installing MySQL\033[0m\n"
+  console "Installing MySQL"
+
   if hash mysql 2>/dev/null; then
-    printf "\nMySQL is already installed. Skipping."
+    console "MySQL is already installed. Skipping." 1
     return
   fi
 
@@ -159,9 +190,10 @@ mysql_install() {
 }
 
 postgresql_install() {
-  printf "\n\033[0;32m[10|$NUMBER_OF_STEPS] Installing PostgreSQL\033[0m\n"
+  console "Installing PostgreSQL"
+
   if hash psql 2>/dev/null; then
-    printf "\nPostgreSQL is already installed. Skipping."
+    console "PostgreSQL is already installed. Skipping." 1
     return
   fi
 
@@ -170,9 +202,10 @@ postgresql_install() {
 
 # Development Software
 docker_install() {
-  printf "\n\033[0;32m[11|$NUMBER_OF_STEPS] Installing Docker\033[0m\n"
+  console "Installing Docker"
+
   if [ -x "$(command -v docker)" ]; then
-    printf "\nDocker is already installed. Skipping."
+    console "Docker is already installed. Skipping." 1
     return
   fi
 
@@ -180,16 +213,17 @@ docker_install() {
 }
 
 vim_install() {
-  printf "\n\033[0;32m[12|$NUMBER_OF_STEPS] Installing Vim and MacVim\033[0m\n"
+  console "Installing Vim and MacVim"
 
   brew install vim
   brew install macvim
 }
 
 vscode_install() {
-  printf "\n\033[0;32m[13|$NUMBER_OF_STEPS] Installing Visual Studio Code\033[0m\n"
+  console "Installing Visual Studio Code"
+
   if [ -x "$(command -v code)" ]; then
-    printf "\nVisual Studio Code is already installed. Skipping."
+    console "Visual Studio Code is already installed. Skipping." 1
     return
   fi
 
@@ -197,9 +231,10 @@ vscode_install() {
 }
 
 tmux_install() {
-  printf "\n\033[0;32m[14|$NUMBER_OF_STEPS] Installing Tmux\033[0m\n"
+  console "Installing Tmux"
+
   if tmux -V &>/dev/null; then
-    printf "\nTmux is already installed. Skipping."
+    console "Tmux is already installed. Skipping." 1
     return
   fi
 
@@ -207,9 +242,10 @@ tmux_install() {
 }
 
 iterm2_install() {
-  printf "\n\033[0;32m[15|$NUMBER_OF_STEPS] Installing Tmux\033[0m\n"
+  console "Installing Tmux"
+
   if brew info brew-cask &>/dev/null; then
-    printf "\niTerm2 is already installed. Skipping."
+    console "iTerm2 is already installed. Skipping." 1
     return
   fi
 
@@ -238,25 +274,39 @@ read -p "Do you wish to install everything? Say $(echo -e "\033[1;31mno\033[0m")
 echo
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  printf "\nInstalling everything..."
-  command_line_tools_install
+  console "Installing everything"
+  # command_line_tools_install
   homebrew_install
+  STEP=$((STEP + 1))
   git_install
+  STEP=$((STEP + 1))
   sshkeys_install
+  STEP=$((STEP + 1))
   zsh_install
+  STEP=$((STEP + 1))
   asdf_install
+  STEP=$((STEP + 1))
   nodejs_install
+  STEP=$((STEP + 1))
   ruby_install
+  STEP=$((STEP + 1))
   mysql_install
+  STEP=$((STEP + 1))
   postgresql_install
+  STEP=$((STEP + 1))
   docker_install
+  STEP=$((STEP + 1))
   vim_install
+  STEP=$((STEP + 1))
   vscode_install
+  STEP=$((STEP + 1))
   tmux_install
+  STEP=$((STEP + 1))
   iterm2_install
+  STEP=$((STEP + 1))
 else
   NUMBER_OF_STEPS=0
-  question "Install Command-line Tools?" "INSTALL_COMMAND_LINE_TOOLS"
+  # question "Install Command-line Tools?" "INSTALL_COMMAND_LINE_TOOLS"
   question "Install Homebrew?" "INSTALL_HOMEBREW"
   question "Install Git?" "INSTALL_GIT"
   question "Generate SSH keys" "GENERATE_SSH_KEYS"
@@ -272,9 +322,9 @@ else
   question "Install Tmux?" "INSTALL_TMUX"
   question "Install iTerm2?" "INSTALL_ITERM"
 
-  if [[ ! -z "$INSTALL_COMMAND_LINE_TOOLS" ]] || [[ "$INSTALL_COMMAND_LINE_TOOLS" =~ (Y|y|1) ]]; then
-    command_line_tools_install
-  fi
+  # if [[ ! -z "$INSTALL_COMMAND_LINE_TOOLS" ]] || [[ "$INSTALL_COMMAND_LINE_TOOLS" =~ (Y|y|1) ]]; then
+  #   command_line_tools_install
+  # fi
 
   if [[ ! -z "$INSTALL_HOMEBREW" ]] || [[ "$INSTALL_HOMEBREW" =~ (Y|y|1) ]]; then
     homebrew_install
