@@ -177,29 +177,6 @@ ruby_install() {
   asdf global ruby 2.6.3
 }
 
-# Databases
-mysql_install() {
-  console "Installing MySQL"
-
-  if hash mysql 2>/dev/null; then
-    console "MySQL is already installed. Skipping." 1
-    return
-  fi
-
-  brew install mysql
-}
-
-postgresql_install() {
-  console "Installing PostgreSQL"
-
-  if hash psql 2>/dev/null; then
-    console "PostgreSQL is already installed. Skipping." 1
-    return
-  fi
-
-  brew install postgres
-}
-
 # Development Software
 docker_install() {
   console "Installing Docker"
@@ -290,10 +267,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   STEP=$((STEP + 1))
   ruby_install
   STEP=$((STEP + 1))
-  mysql_install
-  STEP=$((STEP + 1))
-  postgresql_install
-  STEP=$((STEP + 1))
   docker_install
   STEP=$((STEP + 1))
   vim_install
@@ -314,8 +287,6 @@ else
   question "Install asdf?" "INSTALL_ASDF"
   question "Install NodeJS?" "INSTALL_NODEJS"
   question "Install Ruby?" "INSTALL_RUBY"
-  question "Install MySQL?" "INSTALL_MYSQL"
-  question "Install PostgreSQL?" "INSTALL_POSTGRES"
   question "Install Docker?" "INSTALL_DOCKER"
   question "Install Vim?" "INSTALL_VIM"
   question "Install VSCode?" "INSTALL_VSCODE"
@@ -352,14 +323,6 @@ else
 
   if [[ ! -z "$INSTALL_RUBY" ]] || [[ "$INSTALL_RUBY" =~ (Y|y|1) ]]; then
     ruby_install
-  fi
-
-  if [[ ! -z "$INSTALL_MYSQL" ]] || [[ "$INSTALL_MYSQL" =~ (Y|y|1) ]]; then
-    mysql_install
-  fi
-
-  if [[ ! -z "$INSTALL_POSTGRES" ]] || [[ "$INSTALL_POSTGRES" =~ (Y|y|1) ]]; then
-    postgresql_install
   fi
 
   if [[ ! -z "$INSTALL_DOCKER" ]] || [[ "$INSTALL_DOCKER" =~ (Y|y|1) ]]; then
