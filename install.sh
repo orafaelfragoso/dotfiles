@@ -12,7 +12,7 @@ if [ -d "$HOME/.dotfiles" ]; then
 	echo "\nFinished backup resuming install."
 fi
 
-printf "\nInstalling dotfiles for the first time 🚀\n"
+printf "\nInstalling dotfiles 🚀\n"
 curl -L -o dotfiles.zip https://github.com/orafaelfragoso/dotfiles/archive/master.zip
 unzip dotfiles.zip
 cp -r ./dotfiles-master $HOME/.dotfiles
