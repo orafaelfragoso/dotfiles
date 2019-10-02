@@ -5,16 +5,19 @@ GIT_EMAIL=""
 GIT_USERNAME=""
 GIT_NAME=""
 
-if [ ! -d "$HOME/.dotfiles" ]; then
-	printf "\nInstalling dotfiles for the first time 🚀\n"
-	curl -L -o dotfiles.zip https://github.com/orafaelfragoso/dotfiles/archive/master.zip
-	unzip dotfiles.zip
-	cp -r ./dotfiles-master $HOME/.dotfiles
-	rm -rf ./dotfiles-master ./dotfiles.zip
-	cd "$HOME/.dotfiles"
-else
-	echo "\n🚫 dotfiles are already installed."
+if [ -d "$HOME/.dotfiles" ]; then
+	echo "\nFound dotfiles directory."
+	echo "\nCreating backup before continuing."
+	mv $HOME/.dotfiles $HOME/.dotfiles.backup
+	echo "\nFinished backup resuming install."
 fi
+
+printf "\nInstalling dotfiles for the first time 🚀\n"
+curl -L -o dotfiles.zip https://github.com/orafaelfragoso/dotfiles/archive/master.zip
+unzip dotfiles.zip
+cp -r ./dotfiles-master $HOME/.dotfiles
+rm -rf ./dotfiles-master ./dotfiles.zip
+cd "$HOME/.dotfiles"
 
 function config() {
 	printf "\033[0;32m$SYSTEM\033[0m\n"
@@ -26,17 +29,17 @@ function config() {
 }
 
 case "$SYSTEM" in
-	Linux*)     
+	Linux*)
 		# todo: Detect different versions of Linux
 		config "Linux"
 		;;
-	Darwin*)    
+	Darwin*)
 		config "MacOS"
 		. ./bin/macos.sh
 		;;
-	CYGWIN*)    
+	CYGWIN*)
 		config "CYGWIN"
 		;;
-	*)          
+	*)
 		printf "Unknown operating system. Please find your operating system file inside the 'bin' folder in this project and run the script manually.\n"
 esac
