@@ -221,12 +221,23 @@ tmux_install() {
 iterm2_install() {
   console "Installing Tmux"
 
-  if brew info brew-cask &>/dev/null; then
+  if brew info iterm2 &>/dev/null; then
     console "iTerm2 is already installed. Skipping." 1
     return
   fi
 
   brew cask install iterm2
+}
+
+spectacle_install() {
+  console "Installing Spectacle"
+
+  if brew info spectacle &>/dev/null; then
+    console "Spectacle is already installed. Skipping." 1
+    return
+  fi
+
+  brew cask install spectacle
 }
 
 # User Preferences
@@ -277,6 +288,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   STEP=$((STEP + 1))
   iterm2_install
   STEP=$((STEP + 1))
+  spectacle_install
+  STEP=$((STEP + 1))
 else
   NUMBER_OF_STEPS=0
   # question "Install Command-line Tools?" "INSTALL_COMMAND_LINE_TOOLS"
@@ -292,6 +305,7 @@ else
   question "Install VSCode?" "INSTALL_VSCODE"
   question "Install Tmux?" "INSTALL_TMUX"
   question "Install iTerm2?" "INSTALL_ITERM"
+  question "Install Spectacle?" "INSTALL_SPECTACLE"
 
   # if [[ ! -z "$INSTALL_COMMAND_LINE_TOOLS" ]] || [[ "$INSTALL_COMMAND_LINE_TOOLS" =~ (Y|y|1) ]]; then
   #   command_line_tools_install
@@ -343,5 +357,9 @@ else
 
   if [[ ! -z "$INSTALL_ITERM" ]] || [[ "$INSTALL_ITERM" =~ (Y|y|1) ]]; then
     iterm2_install
+  fi
+
+  if [[ ! -z "$INSTALL_SPECTACLE" ]] || [[ "$INSTALL_SPECTACLE" =~ (Y|y|1) ]]; then
+    spectacle_install
   fi
 fi
