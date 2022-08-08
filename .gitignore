@@ -6,7 +6,7 @@
 
 # Neovim
 nvim/plugin/*
-!nvim/**/*
+!nvim/*
 
 # Tmux
 tmux/plugins/*
