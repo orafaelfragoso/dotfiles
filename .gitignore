@@ -1,0 +1,16 @@
+*
+!*/
+
+# track this file
+!.gitignore
+
+# Neovim
+nvim/plugin/*
+!nvim/**/*
+
+# Tmux
+tmux/plugins/*
+!tmux/*
+
+# ZSH
+!zsh/*
