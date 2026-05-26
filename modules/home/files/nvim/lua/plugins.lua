@@ -4,9 +4,6 @@ vim.pack.add({
   "https://github.com/nvim-tree/nvim-web-devicons",
   "https://github.com/ibhagwan/fzf-lua",
   "https://github.com/neovim/nvim-lspconfig",
-  "https://github.com/mason-org/mason.nvim",
-  "https://github.com/mason-org/mason-lspconfig.nvim",
-  "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim",
   "https://github.com/stevearc/conform.nvim",
   "https://github.com/nvim-treesitter/nvim-treesitter",
 })
@@ -27,8 +24,6 @@ require("nvim-treesitter").install({
   "vim",
   "vimdoc",
 })
-
-require("mason").setup()
 
 vim.lsp.config("tailwindcss", {
   settings = {
@@ -58,37 +53,19 @@ vim.lsp.config("tailwindcss", {
   end,
 })
 
-require("mason-lspconfig").setup({
-  ensure_installed = {
-    "lua_ls",
-    "ts_ls",
-    "oxlint",
-    "eslint",
-    "html",
-    "cssls",
-    "jsonls",
-    "tailwindcss",
-  },
-  automatic_enable = {
-    "lua_ls",
-    "ts_ls",
-    "oxlint",
-    "eslint",
-    "html",
-    "cssls",
-    "jsonls",
-    "tailwindcss",
-  },
+vim.lsp.config("oxlint", {
+  cmd = { "oxlint", "--lsp" },
 })
 
-require("mason-tool-installer").setup({
-  ensure_installed = {
-    "biome",
-    "oxfmt",
-    "oxlint",
-    "prettier",
-    "stylua",
-  },
+vim.lsp.enable({
+  "lua_ls",
+  "ts_ls",
+  "oxlint",
+  "eslint",
+  "html",
+  "cssls",
+  "jsonls",
+  "tailwindcss",
 })
 
 local prettier_root_files = {
