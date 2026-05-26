@@ -8,6 +8,11 @@ vim.pack.add({
   "https://github.com/nvim-treesitter/nvim-treesitter",
 })
 
+local nix_profile_bin = vim.fn.expand("~/.nix-profile/bin")
+if vim.fn.isdirectory(nix_profile_bin) == 1 then
+  vim.env.PATH = nix_profile_bin .. ":" .. vim.env.PATH
+end
+
 require("nvim-treesitter").setup()
 
 require("nvim-treesitter").install({
