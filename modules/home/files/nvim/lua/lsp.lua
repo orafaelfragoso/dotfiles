@@ -29,7 +29,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("v", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code Action" }))
     vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename" }))
     vim.keymap.set("n", "<leader>lf", function()
-      vim.lsp.buf.format({ async = true })
+      require("conform").format({
+        bufnr = event.buf,
+        lsp_format = "fallback",
+        timeout_ms = 3000,
+      })
     end, vim.tbl_extend("force", opts, { desc = "Format Document" }))
     vim.keymap.set("n", "<leader>cd", function()
       require("fzf-lua").diagnostics_document({
@@ -38,6 +42,42 @@ vim.api.nvim_create_autocmd("LspAttach", {
         mode = "location",
       })
     end, vim.tbl_extend("force", opts, { desc = "Show Diagnostics on FZF" }))
+    vim.keymap.set("n", "<leader>cT", function()
+      local tailwind = vim.lsp.get_clients({ bufnr = event.buf, name = "tailwindcss" })[1]
+      if not tailwind then
+        vim.notify("No tailwindcss client attached", vim.log.levels.WARN)
+        return
+      end
+
+      require("fzf-lua").diagnostics_document({
+        client_id = tailwind.id,
+        severity = "warn|error",
+        opts = { height = 0.4, prompt = "Tailwind Diagnostics> " },
+        mode = "location",
+      })
+    end, vim.tbl_extend("force", opts, { desc = "Show Tailwind Diagnostics" }))
+    vim.keymap.set("n", "<leader>cX", function()
+      local oxlint = vim.lsp.get_clients({ bufnr = event.buf, name = "oxlint" })[1]
+      if not oxlint then
+        vim.notify("No oxlint client attached", vim.log.levels.WARN)
+        return
+      end
+
+      require("fzf-lua").diagnostics_document({
+        client_id = oxlint.id,
+        severity = "warn|error",
+        opts = { height = 0.4, prompt = "Oxlint Diagnostics> " },
+        mode = "location",
+      })
+    end, vim.tbl_extend("force", opts, { desc = "Show Oxlint Diagnostics" }))
+    vim.keymap.set("n", "<leader>cO", function()
+      if vim.fn.exists(":LspOxlintFixAll") ~= 2 then
+        vim.notify("No oxlint fix-all command available", vim.log.levels.WARN)
+        return
+      end
+
+      vim.cmd.LspOxlintFixAll()
+    end, vim.tbl_extend("force", opts, { desc = "Oxlint Fix All" }))
 
     if client:supports_method("textDocument/inlayHint") then
       vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
@@ -49,5 +89,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     if client:supports_method("textDocument/completion") then
       vim.lsp.completion.enable(true, client.id, event.buf, { autotrigger = true })
     end
+
   end,
 })

@@ -102,12 +102,54 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("treesitter"),
+  pattern = {
+    "bash",
+    "css",
+    "html",
+    "javascript",
+    "javascriptreact",
+    "json",
+    "jsonc",
+    "lua",
+    "markdown",
+    "typescript",
+    "typescriptreact",
+    "vim",
+    "vimdoc",
+  },
+  callback = function()
+    pcall(vim.treesitter.start)
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end,
+})
+
 -- Fix conceallevel for json files
 vim.api.nvim_create_autocmd({ "FileType" }, {
   group = augroup("json_conceal"),
   pattern = { "json", "jsonc", "json5" },
   callback = function()
     vim.opt_local.conceallevel = 0
+  end,
+})
+
+-- Treat JavaScript files that actually contain JSX as React files.
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+  group = augroup("js_with_jsx"),
+  pattern = { "*.js", "*.mjs", "*.cjs" },
+  callback = function(event)
+    if vim.bo[event.buf].filetype == "javascriptreact" then
+      return
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(event.buf, 0, -1, false)
+    for _, line in ipairs(lines) do
+      if line:find("<%u[%w%.]*") or line:find("<%l[%w-]*[%s>/]") then
+        vim.bo[event.buf].filetype = "javascriptreact"
+        return
+      end
+    end
   end,
 })
 
