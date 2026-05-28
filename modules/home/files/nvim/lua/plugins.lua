@@ -30,49 +30,6 @@ require("nvim-treesitter").install({
   "vimdoc",
 })
 
-vim.lsp.config("tailwindcss", {
-  settings = {
-    tailwindCSS = {
-      codeActions = true,
-      classFunctions = { "cn", "cva", "clsx" },
-      lint = {
-        recommendedVariantOrder = "ignore",
-      },
-    },
-  },
-  before_init = function(_, config)
-    config.settings = vim.tbl_deep_extend("force", config.settings or {}, {
-      editor = { tabSize = vim.lsp.util.get_effective_tabstop() },
-    })
-
-    local css_entrypoint = vim.fs.joinpath(config.root_dir or "", "src", "style.css")
-    if vim.fn.filereadable(css_entrypoint) == 1 then
-      config.settings = vim.tbl_deep_extend("force", config.settings or {}, {
-        tailwindCSS = {
-          experimental = {
-            configFile = "src/style.css",
-          },
-        },
-      })
-    end
-  end,
-})
-
-vim.lsp.config("oxlint", {
-  cmd = { "oxlint", "--lsp" },
-})
-
-vim.lsp.enable({
-  "lua_ls",
-  "ts_ls",
-  "oxlint",
-  "eslint",
-  "html",
-  "cssls",
-  "jsonls",
-  "tailwindcss",
-})
-
 local prettier_root_files = {
   ".prettierrc",
   ".prettierrc.json",
@@ -125,6 +82,40 @@ local function package_has(bufnr, package_names)
 
   return false
 end
+
+vim.lsp.config("oxlint", {
+  cmd = { "oxlint", "--lsp" },
+  root_dir = function(bufnr, on_dir)
+    local filename = vim.api.nvim_buf_get_name(bufnr)
+    local path = filename ~= "" and vim.fs.dirname(filename) or vim.uv.cwd()
+    local root = vim.fs.root(path, {
+      ".oxlintrc.json",
+      ".oxlintrc.jsonc",
+      "oxlint.config.ts",
+      "oxlint.config.js",
+      "oxlint.config.mjs",
+      "oxlint.config.cjs",
+    })
+
+    if not root and package_has(bufnr, { "oxlint" }) then
+      root = vim.fs.root(path, { "package.json", ".git" })
+    end
+
+    if root then
+      on_dir(root)
+    end
+  end,
+})
+
+vim.lsp.enable({
+  "lua_ls",
+  "ts_ls",
+  "oxlint",
+  "eslint",
+  "html",
+  "cssls",
+  "jsonls",
+})
 
 local function has_vite_plus(bufnr)
   local filename = vim.api.nvim_buf_get_name(bufnr)
