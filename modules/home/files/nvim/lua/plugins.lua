@@ -39,11 +39,16 @@ local prettier_root_files = {
   ".prettierrc.js",
   ".prettierrc.cjs",
   ".prettierrc.mjs",
+  ".prettierrc.ts",
+  ".prettierrc.cts",
+  ".prettierrc.mts",
   ".prettierrc.toml",
   "prettier.config.js",
   "prettier.config.cjs",
   "prettier.config.mjs",
   "prettier.config.ts",
+  "prettier.config.cts",
+  "prettier.config.mts",
 }
 
 local biome_root_files = { "biome.json", "biome.jsonc" }
@@ -83,6 +88,18 @@ local function package_has(bufnr, package_names)
   return false
 end
 
+local function package_has_field(bufnr, field)
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  local path = filename ~= "" and vim.fs.dirname(filename) or vim.uv.cwd()
+  local package_json = vim.fs.find("package.json", { path = path, upward = true })[1]
+  if not package_json then
+    return false
+  end
+
+  local ok, package = pcall(vim.json.decode, table.concat(vim.fn.readfile(package_json), "\n"))
+  return ok and type(package) == "table" and package[field] ~= nil
+end
+
 vim.lsp.config("oxlint", {
   cmd = { "oxlint", "--lsp" },
   root_dir = function(bufnr, on_dir)
@@ -105,6 +122,15 @@ vim.lsp.config("oxlint", {
       on_dir(root)
     end
   end,
+})
+
+vim.lsp.config("eslint", {
+  settings = {
+    eslint = {
+      format = { enable = false },
+      codeActionsOnSave = { mode = "all" },
+    },
+  },
 })
 
 vim.lsp.enable({
@@ -134,16 +160,16 @@ local function has_vite_plus(bufnr)
 end
 
 local function web_formatters(bufnr)
-  if has_vite_plus(bufnr) or package_has(bufnr, { "vite-plus" }) then
-    return { "oxfmt" }
-  end
-
   if root_has_file(bufnr, biome_root_files) or package_has(bufnr, { "@biomejs/biome" }) then
     return { "biome" }
   end
 
-  if root_has_file(bufnr, prettier_root_files) or package_has(bufnr, { "prettier" }) then
+  if root_has_file(bufnr, prettier_root_files) or package_has_field(bufnr, "prettier") or package_has(bufnr, { "prettier" }) then
     return { "prettier" }
+  end
+
+  if has_vite_plus(bufnr) or package_has(bufnr, { "vite-plus" }) then
+    return { "oxfmt" }
   end
 
   return {}

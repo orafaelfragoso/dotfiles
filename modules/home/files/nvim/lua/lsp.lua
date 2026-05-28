@@ -10,6 +10,8 @@ vim.diagnostic.config({
   },
 })
 
+local eslint_fix_on_save_group = vim.api.nvim_create_augroup("eslint_fix_on_save", { clear = true })
+
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("native_lsp", { clear = true }),
   callback = function(event)
@@ -64,6 +66,33 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
       vim.cmd.LspOxlintFixAll()
     end, vim.tbl_extend("force", opts, { desc = "Oxlint Fix All" }))
+
+    if client.name == "eslint" then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        group = eslint_fix_on_save_group,
+        buffer = event.buf,
+        command = "LspEslintFixAll",
+      })
+
+      vim.keymap.set("n", "<leader>cE", function()
+        local eslint = vim.lsp.get_clients({ bufnr = event.buf, name = "eslint" })[1]
+        if not eslint then
+          vim.notify("No eslint client attached", vim.log.levels.WARN)
+          return
+        end
+
+        require("fzf-lua").diagnostics_document({
+          client_id = eslint.id,
+          severity = "warn|error",
+          opts = { height = 0.4, prompt = "ESLint Diagnostics> " },
+          mode = "location",
+        })
+      end, vim.tbl_extend("force", opts, { desc = "Show ESLint Diagnostics" }))
+
+      vim.keymap.set("n", "<leader>cL", function()
+        vim.cmd.LspEslintFixAll()
+      end, vim.tbl_extend("force", opts, { desc = "ESLint Fix All" }))
+    end
 
     if client:supports_method("textDocument/inlayHint") then
       vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
