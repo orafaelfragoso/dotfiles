@@ -8,7 +8,6 @@
     oxlint
     prettier
     stylua
-    tailwindcss-language-server
     typescript-language-server
     vscode-langservers-extracted
   ];

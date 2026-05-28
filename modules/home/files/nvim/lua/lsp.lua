@@ -42,20 +42,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         mode = "location",
       })
     end, vim.tbl_extend("force", opts, { desc = "Show Diagnostics on FZF" }))
-    vim.keymap.set("n", "<leader>cT", function()
-      local tailwind = vim.lsp.get_clients({ bufnr = event.buf, name = "tailwindcss" })[1]
-      if not tailwind then
-        vim.notify("No tailwindcss client attached", vim.log.levels.WARN)
-        return
-      end
-
-      require("fzf-lua").diagnostics_document({
-        client_id = tailwind.id,
-        severity = "warn|error",
-        opts = { height = 0.4, prompt = "Tailwind Diagnostics> " },
-        mode = "location",
-      })
-    end, vim.tbl_extend("force", opts, { desc = "Show Tailwind Diagnostics" }))
     vim.keymap.set("n", "<leader>cX", function()
       local oxlint = vim.lsp.get_clients({ bufnr = event.buf, name = "oxlint" })[1]
       if not oxlint then
