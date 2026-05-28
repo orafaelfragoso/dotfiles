@@ -4,6 +4,7 @@
   home.packages = with pkgs; [
     biome
     lua-language-server
+    marksman
     oxfmt
     oxlint
     prettier

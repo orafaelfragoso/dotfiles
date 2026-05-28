@@ -1,11 +1,16 @@
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 vim.pack.add({
   { src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
   "https://github.com/nvim-lualine/lualine.nvim",
   "https://github.com/nvim-tree/nvim-web-devicons",
+  "https://github.com/nvim-tree/nvim-tree.lua",
   "https://github.com/ibhagwan/fzf-lua",
   "https://github.com/neovim/nvim-lspconfig",
   "https://github.com/stevearc/conform.nvim",
   "https://github.com/nvim-treesitter/nvim-treesitter",
+  "https://github.com/MeanderingProgrammer/render-markdown.nvim",
 })
 
 local nix_profile_bin = vim.fn.expand("~/.nix-profile/bin")
@@ -138,6 +143,7 @@ vim.lsp.enable({
   "ts_ls",
   "oxlint",
   "eslint",
+  "marksman",
   "html",
   "cssls",
   "jsonls",
@@ -175,6 +181,14 @@ local function web_formatters(bufnr)
   return {}
 end
 
+local function markdown_formatters(bufnr)
+  if root_has_file(bufnr, biome_root_files) or package_has(bufnr, { "@biomejs/biome" }) then
+    return { "biome" }
+  end
+
+  return { "prettier" }
+end
+
 require("conform").setup({
   notify_on_error = true,
   formatters_by_ft = {
@@ -187,7 +201,7 @@ require("conform").setup({
     css = web_formatters,
     scss = web_formatters,
     html = web_formatters,
-    markdown = web_formatters,
+    markdown = markdown_formatters,
     lua = { "stylua" },
   },
   default_format_opts = {
@@ -219,6 +233,51 @@ require("catppuccin").setup({
 vim.cmd.colorscheme("catppuccin")
 
 require("nvim-web-devicons").setup()
+
+require("nvim-tree").setup({
+  sort = {
+    sorter = "case_sensitive",
+  },
+  view = {
+    width = 32,
+    side = "left",
+  },
+  renderer = {
+    group_empty = true,
+    highlight_git = true,
+    highlight_diagnostics = true,
+    icons = {
+      show = {
+        file = true,
+        folder = true,
+        folder_arrow = true,
+        git = true,
+      },
+    },
+  },
+  filters = {
+    dotfiles = false,
+  },
+  git = {
+    enable = true,
+    ignore = false,
+  },
+  diagnostics = {
+    enable = true,
+    show_on_dirs = true,
+  },
+  update_focused_file = {
+    enable = true,
+    update_root = false,
+  },
+})
+
+require("render-markdown").setup({
+  completions = {
+    lsp = { enabled = true },
+  },
+  file_types = { "markdown" },
+})
 
 require("fzf-lua").setup({
   winopts = {

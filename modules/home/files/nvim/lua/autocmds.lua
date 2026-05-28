@@ -103,6 +103,22 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("markdown_editing"),
+  pattern = { "markdown" },
+  callback = function(event)
+    vim.opt_local.breakindent = true
+    vim.opt_local.linebreak = true
+    vim.opt_local.conceallevel = 2
+    vim.opt_local.concealcursor = "nc"
+    vim.opt_local.textwidth = 100
+
+    local opts = { buffer = event.buf, silent = true }
+    vim.keymap.set("n", "<localleader>mp", "<cmd>RenderMarkdown preview<CR>", vim.tbl_extend("force", opts, { desc = "Markdown Preview" }))
+    vim.keymap.set("n", "<localleader>mr", "<cmd>RenderMarkdown buf_toggle<CR>", vim.tbl_extend("force", opts, { desc = "Toggle Markdown Rendering" }))
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
   group = augroup("treesitter"),
   pattern = {
     "bash",
@@ -114,6 +130,7 @@ vim.api.nvim_create_autocmd("FileType", {
     "jsonc",
     "lua",
     "markdown",
+    "markdown_inline",
     "typescript",
     "typescriptreact",
     "vim",
