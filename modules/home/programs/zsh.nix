@@ -62,4 +62,6 @@
       alias workbits-prometheus='open http://prometheus.workbits.local'
     '';
   };
+
+  xdg.configFile."zsh/bindings.zsh".source = ../files/zsh/bindings.zsh;
 }
