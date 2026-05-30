@@ -273,6 +273,7 @@ require("nvim-tree").setup({
 })
 
 require("render-markdown").setup({
+  enabled = false,
   completions = {
     lsp = { enabled = true },
   },

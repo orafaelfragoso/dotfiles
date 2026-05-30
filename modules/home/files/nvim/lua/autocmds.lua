@@ -92,10 +92,10 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- wrap and check for spell in text filetypes
+-- wrap and check for spell in prose-oriented text filetypes
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup("wrap_spell"),
-  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
+  pattern = { "text", "plaintex", "typst", "gitcommit" },
   callback = function()
     vim.opt_local.wrap = true
     vim.opt_local.spell = true
@@ -108,8 +108,9 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function(event)
     vim.opt_local.breakindent = true
     vim.opt_local.linebreak = true
-    vim.opt_local.conceallevel = 2
-    vim.opt_local.concealcursor = "nc"
+    vim.opt_local.spell = false
+    vim.opt_local.conceallevel = 0
+    vim.opt_local.concealcursor = ""
     vim.opt_local.textwidth = 100
 
     local opts = { buffer = event.buf, silent = true }
